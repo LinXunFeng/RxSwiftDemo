@@ -22,6 +22,10 @@ enum LXFNetworkTool {
 }
 
 extension LXFNetworkTool: TargetType {
+    var headers: [String : String]? {
+        return nil
+    }
+    
     /// The target's base `URL`.
     var baseURL: URL {
         return URL(string: "http://gank.io/api/data/")!
@@ -57,7 +61,7 @@ extension LXFNetworkTool: TargetType {
     
     /// The type of HTTP task to be performed.
     var task: Task {
-        return .request
+        return .requestPlain
     }
     
     /// Whether or not to perform Alamofire validation. Defaults to `false`.
@@ -66,6 +70,6 @@ extension LXFNetworkTool: TargetType {
     }
 }
 
-let lxfNetTool = RxMoyaProvider<LXFNetworkTool>()
+let lxfNetTool = MoyaProvider<LXFNetworkTool>()
 
 

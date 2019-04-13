@@ -63,18 +63,21 @@ extension LXFViewModel: LXFViewModelType {
         
         output.requestCommond.subscribe(onNext: {[unowned self] isReloadData in
             self.index = isReloadData ? 1 : self.index+1
-            lxfNetTool.request(.data(type: input.category, size: 10, index: self.index)).mapArray(LXFModel.self).subscribe({ [weak self] (event) in
-                switch event {
-                case let .next(modelArr):
-                    self?.models.value = isReloadData ? modelArr : (self?.models.value ?? []) + modelArr
-                    LXFProgressHUD.showSuccess("加载成功")
-                case let .error(error):
-                    LXFProgressHUD.showError(error.localizedDescription)
-                case .completed:
-                    output.refreshStatus.value = isReloadData ? .endHeaderRefresh : .endFooterRefresh
-                }
-            }).addDisposableTo(self.rx_disposeBag)
-        }).addDisposableTo(rx_disposeBag)
+            lxfNetTool.rx.request(.data(type: input.category, size: 10, index: self.index))
+                .asObservable()
+                .mapArray(LXFModel.self)
+                .subscribe({ [weak self] (event) in
+                    switch event {
+                    case let .next(modelArr):
+                        self?.models.value = isReloadData ? modelArr : (self?.models.value ?? []) + modelArr
+                        LXFProgressHUD.showSuccess("加载成功")
+                    case let .error(error):
+                        LXFProgressHUD.showError(error.localizedDescription)
+                    case .completed:
+                        output.refreshStatus.value = isReloadData ? .endHeaderRefresh : .endFooterRefresh
+                    }
+                }).disposed(by: self.rx.disposeBag)
+        }).disposed(by: rx.disposeBag)
         
         return output
     }

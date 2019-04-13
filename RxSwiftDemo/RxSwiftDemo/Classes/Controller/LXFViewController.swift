@@ -25,7 +25,13 @@ class LXFViewController: UIViewController {
         $0.register(cellType: LXFViewCell.self)
         $0.rowHeight = LXFViewCell.cellHeigh()
     }
-    let dataSource = RxTableViewSectionedReloadDataSource<LXFSection>()
+    let dataSource = RxTableViewSectionedReloadDataSource<LXFSection>(configureCell: { ds, tv, ip, item in
+        let cell = tv.dequeueReusableCell(for: ip) as LXFViewCell
+        cell.picView.kf.setImage(with: URL(string: item.url))
+        cell.descLabel.text = "描述: \(item.desc)"
+        cell.sourceLabel.text = "来源: \(item.source)"
+        return cell
+    })
     var vmOutput : LXFViewModel.LXFOutput?
     
     override func viewDidLoad() {
@@ -49,23 +55,15 @@ extension LXFViewController {
     }
     
     fileprivate func bindView() {
-        // 绑定cell
-        dataSource.configureCell = { ds, tv, ip, item in
-            let cell = tv.dequeueReusableCell(for: ip) as LXFViewCell
-            cell.picView.kf.setImage(with: URL(string: item.url))
-            cell.descLabel.text = "描述: \(item.desc)"
-            cell.sourceLabel.text = "来源: \(item.source)"
-            return cell
-        }
         
         // 设置代理
-        tableView.rx.setDelegate(self).addDisposableTo(rx_disposeBag)
+        tableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
         
         
         let vmInput = LXFViewModel.LXFInput(category: .welfare)
         let vmOutput = viewModel.transform(input: vmInput)
         
-        vmOutput.sections.asDriver().drive(tableView.rx.items(dataSource: dataSource)).addDisposableTo(rx_disposeBag)
+        vmOutput.sections.asDriver().drive(tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
         
         vmOutput.refreshStatus.asObservable().subscribe(onNext: {[weak self] status in
             switch status {
@@ -82,7 +80,7 @@ extension LXFViewController {
             default:
                 break
             }
-        }).addDisposableTo(rx_disposeBag)
+        }).disposed(by: rx.disposeBag)
         
         tableView.mj_header = MJRefreshNormalHeader(refreshingBlock: { 
             vmOutput.requestCommond.onNext(true)
