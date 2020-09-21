@@ -1,8 +1,9 @@
 # RxSwiftDemo
 RxSwiftDemo
 
- [iOS - RxSwift 项目实战记录](http://www.jianshu.com/p/da01f09db57a) 附属Demo
+【iOS - RxSwift 项目实战记录】 附属Demo
 
+文章链接: [掘金](https://juejin.im/post/6844903498371317767) | [个人博客](https://linxunfeng.top/2017/09/12/ios-rxswift-项目实战记录/)
 
 想更方便使用RxSwift的同学可以了解一下另一个Demo:  [LXFRefreshable](https://github.com/LinXunFeng/LXFProtocolTool/tree/master/Example/LXFProtocolTool/Demo/LXFRefreshable)
 
